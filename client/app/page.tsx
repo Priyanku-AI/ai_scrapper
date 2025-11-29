@@ -6,18 +6,18 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 // Particle effect component
 const Particles = () => {
   const canvasRef = useRef(null);
-  
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    
+
     const particles = [];
     const particleCount = 50;
-    
+
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
@@ -28,40 +28,40 @@ const Particles = () => {
         color: `hsla(${Math.random() * 60 + 220}, 80%, 70%, ${Math.random() * 0.5 + 0.1})`
       });
     }
-    
+
     const animate = () => {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
+
       particles.forEach(particle => {
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fillStyle = particle.color;
         ctx.fill();
-        
+
         particle.x += particle.speedX;
         particle.y += particle.speedY;
-        
+
         if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
         if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
       });
-      
+
       requestAnimationFrame(animate);
     };
-    
+
     animate();
-    
+
     const handleResize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
+
   return (
-    <canvas 
+    <canvas
       ref={canvasRef}
       style={{
         position: 'fixed',
@@ -129,7 +129,7 @@ export default function HomePage() {
       fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif'
     }}>
       <Particles />
-      
+
       {/* Glass Card */}
       <div style={{
         background: 'rgba(15, 15, 35, 0.25)',
@@ -162,7 +162,7 @@ export default function HomePage() {
           pointerEvents: 'none',
           zIndex: -1
         }} />
-        
+
         <h1 style={{
           color: 'white',
           fontSize: '2.5rem',
@@ -174,7 +174,7 @@ export default function HomePage() {
         }}>
           Praśna<span style={{ color: '#a855f7' }}>.</span>AI
         </h1>
-        
+
         <p style={{
           color: 'rgba(255, 255, 255, 0.7)',
           textAlign: 'center',
@@ -187,10 +187,10 @@ export default function HomePage() {
 
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           <div style={{ marginBottom: '20px' }}>
-            <input 
-              name="url" 
-              placeholder="Paste website link & ask anything..." 
-              required 
+            <input
+              name="url"
+              placeholder="Paste website link & ask anything..."
+              required
               style={{
                 width: '100%',
                 padding: '16px 20px',
@@ -213,7 +213,7 @@ export default function HomePage() {
                 e.target.style.boxShadow = 'none';
               }}
             />
-            
+
             <textarea
               name="question"
               placeholder="What are the key features of this website?"
@@ -244,39 +244,80 @@ export default function HomePage() {
               }}
             />
           </div>
-          
-          <button 
-            type="submit" 
-            disabled={isSubmitting}
-            style={{
-              width: '100%',
-              padding: '16px',
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)',
-              color: 'white',
-              fontSize: '1rem',
-              fontWeight: 600,
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              opacity: isSubmitting ? 0.7 : 1,
-              pointerEvents: isSubmitting ? 'none' : 'auto'
-            }}
+
+          <div style={{
+            position: 'relative',
+            width: '100%',
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #8B5CF6 0%, #3B82F6 50%, #2DD4BF 100%)',
+            padding: '2px',
+            boxShadow: '0 4px 20px -5px rgba(139, 92, 246, 0.5)',
+            transform: 'perspective(500px) rotateX(2deg)',
+            transition: 'all 0.3s ease',
+            overflow: 'hidden'
+          }}
             onMouseOver={(e) => {
-              e.target.style.transform = 'translateY(-1px)';
-              e.target.style.boxShadow = '0 4px 20px -5px rgba(139, 92, 246, 0.5)';
+              e.currentTarget.style.transform = 'perspective(500px) rotateX(5deg) scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 8px 30px -5px rgba(139, 92, 246, 0.7)';
             }}
             onMouseOut={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}
-          >
-            {isSubmitting ? 'Processing...' : 'Reveal →'}
-          </button>
+              e.currentTarget.style.transform = 'perspective(500px) rotateX(2deg)';
+              e.currentTarget.style.boxShadow = '0 4px 20px -5px rgba(139, 92, 246, 0.5)';
+            }}>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                width: '100%',
+                padding: '16px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #8B5CF6 0%, #3B82F6 50%, #2DD4BF 100%)',
+                color: 'white',
+                fontSize: '1rem',
+                fontWeight: 700,
+                letterSpacing: '0.5px',
+                border: 'none',
+                cursor: 'pointer',
+                position: 'relative',
+                overflow: 'hidden',
+                zIndex: 1,
+                opacity: isSubmitting ? 0.7 : 1,
+                pointerEvents: isSubmitting ? 'none' : 'auto',
+                textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+                boxShadow: 'inset 0 4px 15px rgba(255,255,255,0.2), inset 0 -4px 15px rgba(0,0,0,0.2)'
+              }}
+            >
+              <span style={{
+                position: 'relative',
+                zIndex: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}>
+                {isSubmitting ? 'Processing...' : 'Reveal →'}
+              </span>
+              {/* Glossy overlay */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: '-100%',
+                width: '200%',
+                height: '100%',
+                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                transform: 'rotate(-30deg)',
+                transition: 'left 0.7s ease-in-out',
+                zIndex: 1
+              }}
+                onMouseOver={(e) => {
+                  e.target.style.left = '100%';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.left = '-100%';
+                }}
+              />
+            </button>
+          </div>
         </form>
 
         {/* Task Status */}
@@ -322,7 +363,7 @@ export default function HomePage() {
           </div>
         )}
       </div>
-      
+
       {/* Subtle gradient overlay */}
       <div style={{
         position: 'fixed',
@@ -334,7 +375,7 @@ export default function HomePage() {
         pointerEvents: 'none',
         zIndex: 0
       }} />
-      
+
       <div style={{
         position: 'fixed',
         bottom: 0,
@@ -345,6 +386,6 @@ export default function HomePage() {
         pointerEvents: 'none',
         zIndex: 0
       }} />
-    </div>
+    </div >
   );
 }
