@@ -10,7 +10,11 @@ export async function addTask(url, question) {
 
 // Fetch task by ID
 export async function fetchTaskById(id) {
-  console.log("the id in service is", id);
-  const result = await db.select().from(tasks).where(eq(tasks.id, Number(id)));
-  return result[0];
+    console.log("the id in service is", id);
+    const result = await db.select().from(tasks).where(eq(tasks.id, Number(id)));
+    return result[0];
+}
+
+export async function processTaskJob(data) {
+    console.log("processing job with data:", data);
 }
