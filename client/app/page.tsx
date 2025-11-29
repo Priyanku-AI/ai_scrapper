@@ -1,65 +1,76 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+
+export default function HomePage() {
+  const [taskId, setTaskId] = useState(null);
+
+  // POST create task
+  const createTask = useMutation({
+    mutationFn: async ({ url, question }) => {
+      const res = await fetch("http://localhost:5000/api/task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, question }),
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      setTaskId(data.id);
+    },
+  });
+
+  // Poll task status
+  const { data: taskData } = useQuery({
+    queryKey: ["task", taskId],
+    queryFn: async () => {
+      const res = await fetch(`http://localhost:5000/api/task/${taskId}`);
+      return res.json();
+    },
+    enabled: !!taskId,
+    refetchInterval: 2000, // poll every 2 secs
+  });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div style={{ padding: "40px", maxWidth: "600px", margin: "auto" }}>
+      <h1>Praśna.AI</h1>
+
+      {/* Input Form */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const url = e.target.url.value;
+          const question = e.target.question.value;
+
+          createTask.mutate({ url, question });
+        }}
+      >
+        <input name="url" placeholder="Enter website URL" required />
+        <br />
+        <textarea
+          name="question"
+          placeholder="Ask a question about the website"
+          required
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+        <br />
+        <button type="submit">Submit</button>
+      </form>
+
+      {/* Task Status */}
+      {taskId && (
+        <div style={{ marginTop: "30px" }}>
+          <h3>Task Status</h3>
+          <p>Status: {taskData?.status}</p>
+
+          {taskData?.status === "completed" && (
+            <>
+              <h3>Reveal</h3>
+              <p>{taskData.answer}</p>
+            </>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      )}
     </div>
   );
 }
